@@ -1,5 +1,6 @@
 # opcl7
-after installing node js with node install,\ 
+
+after installing node js with node install\
 create ".env" file and add following variables :\
 ATLASURL=[mongodb connection URL]\
 PRIVATEKEY=[privatekey]\
