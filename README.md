@@ -6,4 +6,4 @@ ATLASURL=[mongodb connection URL]\
 PRIVATEKEY=[privatekey]\
 serverUrl=[local server url]\
 \
-note that serverwill always run on port 4000
+note that server will always run on port 4000
