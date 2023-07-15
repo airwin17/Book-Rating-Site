@@ -1,3 +1,5 @@
+
+var mongoose = require ('mongoose');
 var bookSchema=require("../Model/book")
 var multer=require("../middleware/multer")
 const fs = require('fs');
@@ -12,12 +14,24 @@ module.exports={
         res.json(books)
     },
     getBookById:async function(req,res){
-        var book=await bookSchema.findOne({_id:req.params.id})
-        res.json(book)
+        try{
+            var book=await bookSchema.findOne({_id:req.params.id});
+            book.imageUrl=serverUrl+"images/"+book.imageUrl;
+            res.json(book)
+        }catch(err){
+            res.send(err)
+        }
+       
     },
     getBestRatingBooks:async function(req,res){
+        console.log("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
         var books=await bookSchema.find({}).sort({averageRating:-1})
-        res.json([books[0],books[1],books[2]]);
+        var p=[];
+        for(var i=0;i<books.length;i++){
+            p.push(books[i]);
+        }
+        res.json(p);
+
     },
     addBook:async function(req,res){
         try{
@@ -31,8 +45,7 @@ module.exports={
             var book=new bookSchema(JSON.parse(req.body.book))
             book.imageUrl=filen;
             book.averageRating=0
-            console.log(filen)
-            //console.log(book)
+            book._id=Math.random().toString(36).substring(2, 8);
             if(Number.isInteger(book.year)){
                 book.save()
                 res.json({message:"envoié avec succes"})
@@ -82,16 +95,23 @@ module.exports={
             if(req.body.userId==res.locals._id){
                 var targetbook=await bookSchema.findOne({_id:req.params.id})
                 var somme=0;
+                console.log("ert")
+                console.log(res.locals._id)
+                console.log(req.body)
                 for(var i=0;i<targetbook.ratings.length;i++){
+                    console.log("lol")
+                    console.log(req.body)
+                    console.log(targetbook.ratings)
                     if(targetbook.ratings[i].userId==req.body.userId){
                         targetbook.ratings[i].grade=req.body.rating;
                     }else if(i==targetbook.ratings.length-1){
+                        console.log("pompom")
                         targetbook.ratings.push(req.body)
                     }
                     somme+=targetbook.ratings[i].grade
                 }
                 targetbook.averageRating=(somme/targetbook.ratings.length);
-                await bookSchema.findByIdAndUpdate(res.locals._id,targetbook)
+                await bookSchema.findByIdAndUpdate(targetbook._id,targetbook)
             }else{
                 res.status(403)
             }
@@ -126,5 +146,4 @@ module.exports={
             }
         }
     }
-    
 }
