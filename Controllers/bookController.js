@@ -10,10 +10,20 @@ module.exports={
         for(var i=0;i<books.length;i++){
             books[i].imageUrl=serverUrl+"images/"+books[i].imageUrl
         }
-        res.status(200)
         res.json(books)
     },
     getBookById:async function(req,res){
+       if(req.params.id=="bestrating"){
+        console.log("lol")
+        var books=await bookSchema.find({}).sort({averageRating:-1})
+        console.log(books)
+        var p=[];
+        for(var i=0;i<books.length;i++){
+            books[i].imageUrl=serverUrl+"images/"+books[i].imageUrl
+            p.push(books[i]);
+        }
+        res.json(p);
+       }else{
         try{
             var book=await bookSchema.findOne({_id:req.params.id});
             book.imageUrl=serverUrl+"images/"+book.imageUrl;
@@ -21,18 +31,10 @@ module.exports={
         }catch(err){
             res.send(err)
         }
+       }
        
     },
-    getBestRatingBooks:async function(req,res){
-        console.log("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
-        var books=await bookSchema.find({}).sort({averageRating:-1})
-        var p=[];
-        for(var i=0;i<books.length;i++){
-            p.push(books[i]);
-        }
-        res.json(p);
-
-    },
+    
     addBook:async function(req,res){
         try{
             const MIME_TYPES = {

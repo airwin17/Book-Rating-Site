@@ -7,13 +7,9 @@ router.use(express.json())
 router
     .route("/")
     .get(bookc.getAllBooks)
-
 router
     .route("/:id")
     .get(bookc.getBookById)
-router
-    .route("/bestrating")
-    .get(bookc.getBestRatingBooks)
 router
     .route("/")
     .post(auth.authentificationCheck,multer.upload.single("image"),bookc.addBook)
@@ -26,6 +22,4 @@ router
 router
     .route("/:id")
     .delete(auth.authentificationCheck,bookc.deleteBook)
-
-
 module.exports=router
