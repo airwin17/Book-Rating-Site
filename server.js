@@ -1,5 +1,5 @@
 
-var mongoose=require("mongoose")
+var mongoose=require("mongoose");
 const express = require('express');
 const app = express();
 var cors = require('cors');
@@ -13,7 +13,7 @@ app.use("/api/books",book)
 app.use(express.json())
 
 const url = process.env.ATLASURL;
-console.log(url)
+//console.log(url);
 mongoose.connect(url, { useNewUrlParser: true });
 
 app
