@@ -1,4 +1,4 @@
-# opcl7
+# Book Rating Site in javascript
 
 after installing node js with node install\
 create ".env" file and add following variables :\
