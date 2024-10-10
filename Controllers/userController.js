@@ -5,6 +5,13 @@ var muser=require("../Model/user")
 const jwt = require('jsonwebtoken');
 const saltRounds = 10;
 module.exports={
+    /**
+     * @function addNewUser
+     * @description adds a new user to the database
+     * @param {Object} req - request object
+     * @param {Object} res - response object
+     * @returns {Object} - a status code and a JSON object with a message
+     */
     addNewUser:async function (req,res){
         if(req.body.password.length>5){
             if(await muser.findOne({email:req.body.email})==null){

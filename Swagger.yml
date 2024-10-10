@@ -1,0 +1,258 @@
+openapi: 3.1.0
+info:
+  title: API Documentation
+  version: 1.0.0
+servers:
+  - url: https://localhost:4000
+paths:
+  /api/auth/signup:
+    post:
+      summary: Hash user password, add user to database
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /api/auth/login:
+    post:
+      summary: Verify user credentials ; return user _id from database and a signed
+        JSON web token (also containing user _id).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                  token:
+                    type: string
+  /api/books:
+    get:
+      summary: Get all books
+      responses:
+        '200':
+          description: A list of books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+    post:
+      summary: Capture and store the image, analyze the book
+        transformed into a character string, and store it
+        in the database by correctly setting its ImageUrl.
+        Initialize the book's average rating to 0 and its
+        rating with an empty array. Notice that the initial
+        request body is empty; when Multer is added, it returns
+        a string for the request body based on the data submitted
+        with the file.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                book:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Book added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /api/books/bestrating:
+    get:
+      summary: Get top 3 books by rating
+      responses:
+        '200':
+          description: A list of top 3 books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+  /api/books/{id}:
+    get:
+      summary: Get a book by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+    put:
+      summary: Update a book by ID. If an image is uploaded, it is
+        captured and the book's imageUrl is updated. If no file is
+        provided, the book information is in the body of the request
+        (req.body.title, req.body.author, etc.). If a file is
+        provided, the book as a string is in req.body.book. Note
+        that the initial request body is empty; when Multer is added,
+        it returns a string of the request body based on the data
+        submitted with the file.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                book:
+                  $ref: '#/components/schemas/Book'
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                book:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Book updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    delete:
+      summary: Delete a book by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Book deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /api/books/{id}/rating:
+    post:
+      summary: Rate a book by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                rating:
+                  type: number
+      responses:
+        '200':
+          description: Book rated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    Book:
+      type: object
+      properties:
+        userId:
+          type: string
+        title:
+          type: string
+        author:
+          type: string
+        imageUrl:
+          type: string
+        year:
+          type: number
+        genre:
+          type: string
+        ratings:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+              grade:
+                type: number
+        averageRating:
+          type: number
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - bearerAuth: []

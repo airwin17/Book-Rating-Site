@@ -32,7 +32,6 @@ module.exports={
             res.send(err)
         }
        }
-       
     },
     
     addBook:async function(req,res){
@@ -55,7 +54,7 @@ module.exports={
                 res.json({message:"envoié avec succes"})
             }else{
                 res.status(401)
-                res.send("wrong year forma")
+                res.send("wrong year format")
             }
             
         }catch(err){
